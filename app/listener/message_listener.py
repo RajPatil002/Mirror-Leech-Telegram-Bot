@@ -1,11 +1,11 @@
 
 from app.services.torrent_service import TorrentService
 from app.utils.telebot_util import TelebotUtil
-from services.telebot_service import TelebotService
+from app.services.telebot_service import TelebotService
 from telebot.types import Message
-from settings.config import Config
+from app.settings.config import Config
 from libtorrent import torrent_handle
-from models.torrent_status import TorrentStatus
+from app.models.torrent_status import TorrentStatus
 
 class MessageListener:
     def __init__(self, config: Config):

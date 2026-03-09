@@ -35,7 +35,7 @@ class TorrentService:
             return None
         return handle
     
-    def status_handler(self, handle: lt.torrent_handle, refresh: int | None) -> Generator[TorrentStatus, None, TorrentStatus]:
+    def status_handler(self, handle: lt.torrent_handle, refresh: int | None = None) -> Generator[TorrentStatus, None, TorrentStatus]:
         status = handle.status()
         if not refresh:
             refresh = 10 if (status.total_wanted/1048576) > 500 else 5
