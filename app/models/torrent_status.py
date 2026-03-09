@@ -16,5 +16,5 @@ class TorrentStatus:
         return self.progress * 100
     
     def time_left_sec(self):
-        return (self.total_wanted * (1 - self.progress)) / self.download_rate
+        return (self.size * (1 - self.progress)) / self.down_speed
     

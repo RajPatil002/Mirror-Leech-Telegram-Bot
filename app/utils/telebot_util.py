@@ -42,6 +42,6 @@ class TelebotUtil:
             f"⏰ : {TelebotUtil.format_sec(status.time_left_sec())}\n"
             f"🔽 : {TelebotUtil.size_in_mb(status.down_speed):.3f} MB/s "
             f"🔼 : {TelebotUtil.size_in_mb(status.up_speed):.3f} MB/s\n"
-            f"👥 peers: {status.peers} 🌱 seeds: {status.seeds}\n\n"
+            f"👥 peers : {status.peers}  🌱 seeds : {status.seeds}\n\n"
             f"{status.state}"
         )

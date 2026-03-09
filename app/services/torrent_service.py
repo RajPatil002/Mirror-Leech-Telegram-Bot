@@ -7,14 +7,11 @@ from app.exceptions.torrent_exception import NoSourceFound, NoMetadataFound
 
 class TorrentService:
 
-    # PATH = '/content/drive/MyDrive/TGD'
-    PATH = './content'
-
-    def __init__(self):
+    def __init__(self, save_path: str):
         self.session = lt.session()
         self.session.listen_on(6881, 6891)
         self.params = {
-            'save_path': self.PATH,
+            'save_path': save_path,
             'storage_mode': lt.storage_mode_t(2)
         }
         pass

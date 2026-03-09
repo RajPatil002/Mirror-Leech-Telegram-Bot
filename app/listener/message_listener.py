@@ -8,14 +8,18 @@ from app.exceptions.torrent_exception import NoSourceFound, NoMetadataFound
 
 class MessageListener:
     def __init__(self, config: Config):
-        self.torrent_service = TorrentService()
+        self.torrent_service = TorrentService(save_path=config.save_path)
         self.telebot_service = TelebotService(api_key=config.tele_api_key)
+        self.path_link = config.saved_path_link
+
+        # Register listeners
         self.telebot_service.register(callback= self._handle_start,commands=["hi","start"])
         self.telebot_service.register(callback= self._handle_stop,commands=["stop","exit"])
         self.telebot_service.register(callback= self._handle_torrent_download,commands=["tm","tormirror"])
+        print("Registered listeners")
 
     def start_polling(self):
-        print("Starting polling")
+        print("Starting polling...")
         self.telebot_service.start()
 
     def _handle_start(self, message: Message):
@@ -25,7 +29,7 @@ class MessageListener:
             self.telebot_service.reply_to(message,"This is telegram bot for torrent to gdrive")
 
     def _handle_stop(self, message: Message):
-        self.telebot_service.send_message(message.chat.id,"Shutting Down")
+        self.telebot_service.send_message(message,"Shutting Down")
         # self.bot.stop_polling()
         self.telebot_service.stop_bot()
 
@@ -44,12 +48,13 @@ class MessageListener:
 
             if(handle):
                 name = handle.name()
-                self.telebot_service.edit_message(message=reply,edit_text="Got Metadata, Starting Torrent Download...\n\nUploading: {name}")
+                self.telebot_service.edit_message(message=reply,edit_text=f"Got Metadata, Starting Torrent Download...\n\nUploading: {name}")
                 for status in self.torrent_service.status_handler(handle=handle):
                     msg = TelebotUtil.format_torrent_status(status=status,name=name)
                     self.telebot_service.edit_message(message=reply,edit_text=msg)
                 else:
                     self.telebot_service.delete_message(reply)
-                    self.telebot_service.send_message(message=message,text="Upload COMPLETED\n\n{0}\nCheck Here : {1}\n\n\nReady To Go Again".format(handle.name(), 'gdlink'))
+                    msg = f"✅ Upload COMPLETED\n\n{name}{f"\nCheck Here :{self.path_link}" if(self.path_link) else ''}\n\nReady To Go Again"
+                    self.telebot_service.send_message(message=message,text=msg)
         else:
             self.telebot_service.edit_message(message=reply,edit_text="No download link found")
