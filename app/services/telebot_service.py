@@ -1,5 +1,5 @@
 from telebot import TeleBot
-from telebot.types import Message
+from telebot.types import Chat, Message
 
 
 class TelebotService:
@@ -15,8 +15,8 @@ class TelebotService:
     def stop(self):
         self.bot.stop_bot()
 
-    def send_message(self, message: Message, text: str):
-        return self.bot.send_message(chat_id=message.chat.id, text=text)
+    def send_message(self, chat: Chat, text: str):
+        return self.bot.send_message(chat_id=chat.id, text=text)
 
     def delete_message(self, message: Message):
         return self.bot.delete_message(chat_id=message.chat.id, message_id=message.id)

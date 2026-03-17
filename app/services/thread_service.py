@@ -5,6 +5,7 @@ import libtorrent as lt
 from app.models.torrent_thread import TorrentThread
 
 class ThreadService:
+
     def __init__(self):
         self.threads : Dict[str, TorrentThread] = {}
 
@@ -16,10 +17,10 @@ class ThreadService:
                 return tor
         return None
 
-    def newTask(self, id: str, target: callable, arg: lt.torrent_handle):
+    def newTask(self, id: str, target: callable, args):
         if id in self.threads:
             return None
-        self.threads[id] = Thread(target=target, args=arg)
+        self.threads[id] = Thread(target=target, args=args)
         return id
 
     def stopTask(self, id: str):

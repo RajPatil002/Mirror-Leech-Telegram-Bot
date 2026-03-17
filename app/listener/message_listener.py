@@ -32,7 +32,7 @@ class MessageListener:
             self.telebot_service.reply_to(message,"This is telegram bot for torrent to gdrive")
 
     def _handle_stop(self, message: Message):
-        self.telebot_service.send_message(message,"Shutting Down")
+        self.telebot_service.send_message(chat=message.chat, text="Shutting Down")
         # self.bot.stop_polling()
         self.telebot_service.stop()
         exit(0)
@@ -58,7 +58,7 @@ class MessageListener:
                 print(f"{hash}\n{name}")
 
                 self.telebot_service.edit_message(message=reply,edit_text=f"Got Metadata, Starting Torrent Download...\n\nUploading: {name}")
-                self.thread_service.newTask(arg=handle, id=hash, target=self.dummy)
+                self.thread_service.newTask(arg=(handle, reply), id=hash, target=self.dummy)
                 self.telebot_service.reply_to(message,"Wake up... 🥱")
                 return # todo remove
                 for status in self.torrent_service.status_handler(handle=handle):
@@ -70,6 +70,17 @@ class MessageListener:
                     self.telebot_service.send_message(message=message,text=msg)
         else:
             self.telebot_service.edit_message(message=reply,edit_text="No download link found")
+
+    def stream_status(self, handle, reply: Message):
+        name = handle.name()
+
+        for status in self.torrent_service.status_handler(handle=handle):
+            msg = TelebotUtil.format_torrent_status(status=status,name=name)
+            self.telebot_service.edit_message(message=reply,edit_text=msg)
+        else:
+            self.telebot_service.delete_message(reply)
+            msg = f"✅ Upload COMPLETED\n\n{name}\n{f'\nCheck Here : {self.path_link}' if(self.path_link) else ''}\n\nReady To Go Again"
+            self.telebot_service.send_message(message=reply.chat, text=msg)
 
     def dummy(self):
         print('Dummy')
