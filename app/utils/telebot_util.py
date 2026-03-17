@@ -1,5 +1,6 @@
 from telebot.types import Message
 from app.models.torrent_status import TorrentStatus
+
 class TelebotUtil:
 
     @staticmethod

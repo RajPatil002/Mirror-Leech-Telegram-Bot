@@ -1,4 +1,6 @@
+import time
 
+from app.services.thread_service import ThreadService
 from app.services.torrent_service import TorrentService
 from app.utils.telebot_util import TelebotUtil
 from app.services.telebot_service import TelebotService
@@ -10,6 +12,7 @@ class MessageListener:
     def __init__(self, config: Config):
         self.torrent_service = TorrentService(save_path=config.save_path)
         self.telebot_service = TelebotService(api_key=config.tele_api_key)
+        self.thread_service = ThreadService()
         self.path_link = config.saved_path_link
 
         # Register listeners
@@ -32,6 +35,7 @@ class MessageListener:
         self.telebot_service.send_message(message,"Shutting Down")
         # self.bot.stop_polling()
         self.telebot_service.stop()
+        exit(0)
 
     def _handle_torrent_download(self, message: Message):
         reply = self.telebot_service.reply_to(message=message,reply="Starting")
@@ -46,9 +50,17 @@ class MessageListener:
             except NoMetadataFound as e:
                 self.telebot_service.edit_message(message=reply,edit_text="Unable to fetch metadata")
 
+            self.telebot_service.reply_to(message,"Sleeping... 😴")
             if(handle):
                 name = handle.name()
+                hash = handle.info_hash()
+                
+                print(f"{hash}\n{name}")
+
                 self.telebot_service.edit_message(message=reply,edit_text=f"Got Metadata, Starting Torrent Download...\n\nUploading: {name}")
+                self.thread_service.newTask(arg=handle, id=hash, target=self.dummy)
+                self.telebot_service.reply_to(message,"Wake up... 🥱")
+                return # todo remove
                 for status in self.torrent_service.status_handler(handle=handle):
                     msg = TelebotUtil.format_torrent_status(status=status,name=name)
                     self.telebot_service.edit_message(message=reply,edit_text=msg)
@@ -58,3 +70,10 @@ class MessageListener:
                     self.telebot_service.send_message(message=message,text=msg)
         else:
             self.telebot_service.edit_message(message=reply,edit_text="No download link found")
+
+    def dummy(self):
+        print('Dummy')
+        for i in range(10):
+            print(f"{i} Threading")
+            time.sleep(10)
+        print('Dummy Done')
