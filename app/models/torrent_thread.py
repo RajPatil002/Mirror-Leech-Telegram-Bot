@@ -5,11 +5,11 @@ import libtorrent as lt
 class TorrentThread:
     def __init__(self, id, handle : lt.torrent_handle, thread: Thread):
         self.id = id
-        self.handler = handle
+        self.handle = handle
         self.thread = thread
 
     def name(self) -> str:
-        return self.handler.name()
+        return self.handle.name()
     
     def hash(self):
-        return self.handler.info_hash()
+        return self.handle.info_hash()

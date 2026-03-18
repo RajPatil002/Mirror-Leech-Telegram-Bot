@@ -10,7 +10,7 @@ class TelebotService:
         self.bot.register_message_handler(callback=callback, commands=commands)
 
     def start(self):
-        self.bot.polling()
+        self.bot.polling(skip_pending=True)
 
     def stop(self):
         self.bot.stop_bot()
