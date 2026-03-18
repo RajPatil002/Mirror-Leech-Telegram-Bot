@@ -58,7 +58,7 @@ class MessageListener:
                 
                 print(f"{hash}\n{name}")
                 try:
-                    self.telebot_service.edit_message(message=reply,edit_text=f"Got Metadata, Starting Torrent Download...\n\nUploading: {name}")
+                    self.telebot_service.edit_message(message=reply,edit_text=f"Got Metadata, Starting Torrent Download...\n\nUploading: {name}\n`/stop {hash}`")
                     exist = self.thread_service.getTask(name=name)
                     if exist: 
                         raise DuplicateThread("Already downloading")
