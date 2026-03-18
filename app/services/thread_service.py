@@ -21,7 +21,9 @@ class ThreadService:
         if id in self.threads:
             print("Has already", self.threads.keys())
             return None
-        self.threads[id] = Thread(target=target, args=args)
+        t = Thread(target=target, args=args)
+        self.threads[id] = t
+        t.start()
         return id
 
     def stopTask(self, id: str):
