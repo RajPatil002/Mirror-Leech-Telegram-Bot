@@ -82,7 +82,7 @@ class MessageListener:
             msg = f"✅ Upload COMPLETED\n\n{name}\n{f'\nCheck Here : {self.path_link}' if(self.path_link) else ''}\n\nReady To Go Again"
             self.telebot_service.send_message(message=reply.chat, text=msg)
 
-    def dummy(self):
+    def dummy(self, handle, reply):
         print('Dummy')
         for i in range(10):
             print(f"{i} Threading")
