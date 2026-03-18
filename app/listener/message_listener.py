@@ -68,7 +68,7 @@ class MessageListener:
             self.telebot_service.reply_to(message,"Sleeping... 😴")
             if(handle):
                 name = handle.name()
-                hash = handle.info_hash().to_string()
+                hash = str(handle.info_hash())
                 
                 print(f"{hash}\n{name}")
                 try:
