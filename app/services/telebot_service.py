@@ -10,6 +10,7 @@ class TelebotService:
         self.bot.register_message_handler(callback=callback, commands=commands)
 
     def start(self):
+        self.bot.delete_webhook(drop_pending_updates=True)
         self.bot.polling(skip_pending=True)
 
     def stop(self):

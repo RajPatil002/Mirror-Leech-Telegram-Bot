@@ -38,7 +38,7 @@ class MessageListener:
         parts = message.text.split()
         id = parts[1] if len(parts) > 1 else None
         tor_thread = self.thread_service.getTask(id=id) if id else None
-        
+
         if not tor_thread:
             self.telebot_service.reply_to(message=message, reply=f"Download not found {id}")
             return
@@ -68,7 +68,7 @@ class MessageListener:
             self.telebot_service.reply_to(message,"Sleeping... 😴")
             if(handle):
                 name = handle.name()
-                hash = handle.info_hash()
+                hash = handle.info_hash().to_string()
                 
                 print(f"{hash}\n{name}")
                 try:
