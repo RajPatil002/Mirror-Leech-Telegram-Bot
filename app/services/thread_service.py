@@ -19,6 +19,7 @@ class ThreadService:
 
     def newTask(self, id: str, target: callable, args):
         if id in self.threads:
+            print("Has already", self.threads.keys())
             return None
         self.threads[id] = Thread(target=target, args=args)
         return id
