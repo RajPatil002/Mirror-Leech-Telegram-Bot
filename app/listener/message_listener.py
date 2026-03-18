@@ -58,7 +58,7 @@ class MessageListener:
                 print(f"{hash}\n{name}")
 
                 self.telebot_service.edit_message(message=reply,edit_text=f"Got Metadata, Starting Torrent Download...\n\nUploading: {name}")
-                self.thread_service.newTask(arg=(handle, reply), id=hash, target=self.dummy)
+                self.thread_service.newTask(args=(handle, reply), id=hash, target=self.dummy)
                 self.telebot_service.reply_to(message,"Wake up... 🥱")
                 return # todo remove
                 for status in self.torrent_service.status_handler(handle=handle):
