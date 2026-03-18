@@ -1,5 +1,6 @@
 import time
 
+from app.exceptions.thread_exception import DuplicateThread
 from app.services.thread_service import ThreadService
 from app.services.torrent_service import TorrentService
 from app.utils.telebot_util import TelebotUtil
@@ -56,10 +57,15 @@ class MessageListener:
                 hash = handle.info_hash()
                 
                 print(f"{hash}\n{name}")
+                try:
+                    self.telebot_service.edit_message(message=reply,edit_text=f"Got Metadata, Starting Torrent Download...\n\nUploading: {name}")
+                    exist = self.thread_service.getTask(name=name)
+                    if exist: 
+                        raise DuplicateThread("Already downloading")
+                    self.thread_service.newTask(id=hash, handle=handle, reply=reply, target=self.dummy)
+                except DuplicateThread as e:
+                    self.telebot_service.reply_to(message,"Woke up... 🥱")
 
-                self.telebot_service.edit_message(message=reply,edit_text=f"Got Metadata, Starting Torrent Download...\n\nUploading: {name}")
-                self.thread_service.newTask(args=(handle, reply), id=hash, target=self.dummy)
-                self.telebot_service.reply_to(message,"Wake up... 🥱")
                 return # todo remove
                 for status in self.torrent_service.status_handler(handle=handle):
                     msg = TelebotUtil.format_torrent_status(status=status,name=name)
@@ -88,3 +94,4 @@ class MessageListener:
             print(f"{i} Threading")
             time.sleep(10)
         print('Dummy Done')
+        self.telebot_service.reply_to(reply,"Woke up... 🥱")

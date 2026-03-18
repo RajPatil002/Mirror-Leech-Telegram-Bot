@@ -3,7 +3,8 @@ import libtorrent as lt
 
 
 class TorrentThread:
-    def __init__(self, handle : lt.torrent_handle, thread: Thread):
+    def __init__(self, id, handle : lt.torrent_handle, thread: Thread):
+        self.id = id
         self.handler = handle
         self.thread = thread
 
