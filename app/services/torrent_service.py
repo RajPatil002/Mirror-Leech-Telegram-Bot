@@ -34,9 +34,13 @@ class TorrentService:
             else:
                 break
         else:
+            self.stop_download(handle)
             raise NoMetadataFound(message="Unable to fetch metadata")
         return handle
     
+    def stop_download(self, handle: lt.torrent_handle):
+        self.session.remove_torrent(handle=handle,flags=lt.options_t.delete_files)
+
     def status_handler(self, handle: lt.torrent_handle, refresh: int | None = None) -> Generator[TorrentStatus, None, TorrentStatus]:
         status = handle.status()
         if not refresh:

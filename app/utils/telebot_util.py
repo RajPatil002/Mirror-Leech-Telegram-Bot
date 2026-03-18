@@ -36,7 +36,7 @@ class TelebotUtil:
             return '%dm : %02ds' % (m,s)
 
     @staticmethod
-    def format_torrent_status(status: TorrentStatus, name: str):
+    def format_torrent_status(status: TorrentStatus, id, name: str):
         return (
             f"Name : {name}\n\n"
             f"☁️ {status.progress_perc():.2f}% of {TelebotUtil.size_in_mb(status.size):.3f} MB\n"
@@ -44,5 +44,6 @@ class TelebotUtil:
             f"🔽 : {TelebotUtil.size_in_mb(status.down_speed):.3f} MB/s "
             f"🔼 : {TelebotUtil.size_in_mb(status.up_speed):.3f} MB/s\n"
             f"👥 peers : {status.peers}  🌱 seeds : {status.seeds}\n\n"
-            f"{status.state}"
+            f"{status.state}\n"
+            f"👥 stop : `/stop {id}`"
         )
