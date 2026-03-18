@@ -12,7 +12,7 @@ class ThreadService:
         self._threads : Dict[str, TorrentThread] = {}
 
     def getTask(self, id=None)-> TorrentThread | None:
-        return self._threads[id]
+        return self._threads[id] if id in self._threads else None
 
 
     def searchTask(self, name=None, id=None)-> TorrentThread | None:
