@@ -33,7 +33,20 @@ class MessageListener:
             self.telebot_service.reply_to(message,"This is telegram bot for torrent to gdrive")
 
     def _handle_stop(self, message: Message):
-        self.telebot_service.send_message(chat=message.chat, text="Shutting Down")
+        # self.telebot_service.send_message(chat=message.chat, text="Shutting Down")
+        
+        parts = message.text.split()
+        id = parts[1] if len(parts) > 1 else None
+        if not id:
+            self.telebot_service.reply_to(message=message, reply=f"Download not found {id}")
+            return
+        
+        tor_thread = self.thread_service.getTask(id=id)
+
+        print('Stopping ',tor_thread.name())
+
+        self.torrent_service.stop_download(handle=tor_thread.handler)
+        self.telebot_service.reply_to(message=message, reply=f"Download stopped {id}")
         # self.bot.stop_polling()
         # self.telebot_service.stop()
         # exit(0)
