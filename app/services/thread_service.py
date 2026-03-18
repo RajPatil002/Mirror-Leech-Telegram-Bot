@@ -9,11 +9,14 @@ from app.models.torrent_thread import TorrentThread
 class ThreadService:
 
     def __init__(self):
-        self.threads : Dict[str, TorrentThread] = {}
+        self._threads : Dict[str, TorrentThread] = {}
+
+    def getTask(self, id=None)-> TorrentThread | None:
+        return self._threads[id]
 
 
-    def getTask(self, name=None, id=None)-> TorrentThread | None:
-        tor_theads = self.threads.values()
+    def searchTask(self, name=None, id=None)-> TorrentThread | None:
+        tor_theads = self._threads.values()
         for tor in tor_theads:
             if id and id == tor.id:
                 return tor
@@ -22,15 +25,15 @@ class ThreadService:
         return None
 
     def newTask(self, id: str, target: callable, handle: lt.torrent_handle, reply: Message):
-        if id in self.threads:
-            print("Has already", self.threads.keys())
+        if id in self._threads:
+            print("Has already", self._threads.keys())
             raise DuplicateThread("Thread with same ID already exist")
         t = Thread(target=target, args=(handle,reply))
-        self.threads[id] = TorrentThread(thread=t,handle=handle,id=reply.id)
+        self._threads[id] = TorrentThread(thread=t,handle=handle,id=reply.id)
         t.start()
         return id
 
     def stopTask(self, id: str):
-        if id not in self.threads:
+        if id not in self._threads:
             return None
         pass

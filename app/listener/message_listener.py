@@ -37,11 +37,12 @@ class MessageListener:
         
         parts = message.text.split()
         id = parts[1] if len(parts) > 1 else None
-        if not id:
+        tor_thread = self.thread_service.getTask(id=id) if id else None
+        
+        if not tor_thread:
             self.telebot_service.reply_to(message=message, reply=f"Download not found {id}")
             return
         
-        tor_thread = self.thread_service.getTask(id=id)
 
         print('Stopping ',tor_thread.name())
 
@@ -72,7 +73,7 @@ class MessageListener:
                 print(f"{hash}\n{name}")
                 try:
                     self.telebot_service.edit_message(message=reply,edit_text=f"Got Metadata, Starting Torrent Download...\n\nUploading: {name}\n`/stop {hash}`")
-                    exist = self.thread_service.getTask(name=name)
+                    exist = self.thread_service.searchTask(name=name)
                     if exist: 
                         raise DuplicateThread("Already downloading")
                     self.thread_service.newTask(id=hash, handle=handle, reply=reply, target=self.dummy)
