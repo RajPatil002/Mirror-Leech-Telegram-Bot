@@ -45,9 +45,8 @@ class MessageListener:
         
 
         print('Stopping ',tor_thread.name())
-
-        self.torrent_service.stop_download(handle=tor_thread.handle)
         self.telebot_service.reply_to(message=message, reply=f"Download stopped {id}")
+        self.torrent_service.stop_download(handle=tor_thread.handle)
         # self.bot.stop_polling()
         # self.telebot_service.stop()
         # exit(0)
