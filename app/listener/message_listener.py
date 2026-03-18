@@ -35,8 +35,8 @@ class MessageListener:
     def _handle_stop(self, message: Message):
         self.telebot_service.send_message(chat=message.chat, text="Shutting Down")
         # self.bot.stop_polling()
-        self.telebot_service.stop()
-        exit(0)
+        # self.telebot_service.stop()
+        # exit(0)
 
     def _handle_torrent_download(self, message: Message):
         reply = self.telebot_service.reply_to(message=message,reply="Starting")
