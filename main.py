@@ -6,6 +6,7 @@ def main() -> None:
     config = Config()
     listener = MessageListener(config=config)
     listener.start_polling()
+    print('Exit')
 
 
 if __name__ == "__main__":
