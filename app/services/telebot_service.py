@@ -4,7 +4,7 @@ from telebot.types import Chat, Message
 
 class TelebotService:
     def __init__(self, api_key):
-        self.bot = TeleBot(api_key, threaded=False)
+        self.bot = TeleBot(api_key, num_threads=10)
 
     def register(self, callback, commands):
         self.bot.register_message_handler(callback=callback, commands=commands)
