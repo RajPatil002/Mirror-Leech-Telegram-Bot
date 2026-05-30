@@ -16,6 +16,7 @@ class MessageListener:
         self.telebot_service.register(callback= self._handle_start,commands=["hi","start"])
         self.telebot_service.register(callback= self._handle_stop,commands=["stop","exit"])
         self.telebot_service.register(callback= self._handle_torrent_download,commands=["tm","tormirror"])
+        self.telebot_service.register(callback= self._handle_torrent_download_file,commands=["tmf","tormirrorfile"])
         print("Registered listeners")
 
     def start_polling(self):
@@ -40,21 +41,43 @@ class MessageListener:
         if(link):
             self.telebot_service.edit_message(message=reply,edit_text="Downloading Metadata...")
             try:
-                handle = self.torrent_service.download(link=link)
+                handle = self.torrent_service.download_magnet(link=link)
             except NoSourceFound as e:
                 self.telebot_service.edit_message(message=reply,edit_text="No download source found")
             except NoMetadataFound as e:
                 self.telebot_service.edit_message(message=reply,edit_text="Unable to fetch metadata")
 
             if(handle):
-                name = handle.name()
-                self.telebot_service.edit_message(message=reply,edit_text=f"Got Metadata, Starting Torrent Download...\n\nUploading: {name}")
-                for status in self.torrent_service.status_handler(handle=handle):
-                    msg = TelebotUtil.format_torrent_status(status=status,name=name)
-                    self.telebot_service.edit_message(message=reply,edit_text=msg)
-                else:
-                    self.telebot_service.delete_message(reply)
-                    msg = f"✅ Upload COMPLETED\n\n{name}\n{f'\nCheck Here : {self.path_link}' if(self.path_link) else ''}\n\nReady To Go Again"
-                    self.telebot_service.send_message(message=message,text=msg)
+                self._handle_polling(handle=handle,reply=reply)
         else:
             self.telebot_service.edit_message(message=reply,edit_text="No download link found")
+
+        
+    def _handle_torrent_download_file(self, message: Message):
+        reply = self.telebot_service.reply_to(message=message,reply="Starting")
+        file = TelebotUtil.getMessageFile(message=message, callback=self.telebot_service.get_file)
+        if(file):
+            self.telebot_service.edit_message(message=reply,edit_text="Downloading Metadata...")
+            try:
+                handle = self.torrent_service.download_torrent(file=file)
+            except NoSourceFound as e:
+                self.telebot_service.edit_message(message=reply,edit_text="No download source found")
+            except NoMetadataFound as e:
+                self.telebot_service.edit_message(message=reply,edit_text="Unable to fetch metadata")
+
+            if(handle):
+                self._handle_polling(handle=handle,reply=reply)
+        else:
+            self.telebot_service.edit_message(message=reply,edit_text="No download source found")
+
+    def _handle_polling(self, handle, reply: Message):
+        name = handle.name()
+        self.telebot_service.edit_message(message=reply,edit_text=f"Got Metadata, Starting Torrent Download...\n\nUploading: {name}")
+        for status in self.torrent_service.status_handler(handle=handle):
+            msg = TelebotUtil.format_torrent_status(status=status,name=name)
+            self.telebot_service.edit_message(message=reply,edit_text=msg)
+        else:
+            self.telebot_service.delete_message(reply)
+            msg = f"✅ Upload COMPLETED\n\n{name}\n{f'{chr(10)}Check Here : {self.path_link}' if(self.path_link) else ''}\n\nReady To Go Again"
+            self.telebot_service.send_message(message=reply,text=msg)
+        

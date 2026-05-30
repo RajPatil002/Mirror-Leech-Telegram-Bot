@@ -12,6 +12,10 @@ class TelebotService:
     def start(self):
         self.bot.polling()
 
+    def get_file(self, file_id:str) -> bytes:
+        file_info = self.bot.get_file(file_id=file_id)
+        return self.bot.download_file(file_path=file_info.file_path)
+
     def stop(self):
         self.bot.stop_bot()
 

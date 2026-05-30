@@ -9,6 +9,13 @@ class TelebotUtil:
         return message.text
     
     @staticmethod
+    def getMessageFile(message: Message, callback) -> str:
+        if(not message.reply_to_message or not message.reply_to_message.document):
+            return None
+        id = message.reply_to_message.document.file_id
+        return callback(id)
+    
+    @staticmethod
     def extractLink(text):
         link = None
         if "/tm" in text :
