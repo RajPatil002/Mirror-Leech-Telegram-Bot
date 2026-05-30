@@ -21,9 +21,29 @@ class TorrentService:
         pass
 
 
-    def download(self, link: str) -> lt.torrent_handle | None:
+    def download_magnet(self, link: str) -> lt.torrent_handle | None:
         try:
             handle = lt.add_magnet_uri(self.session, link, self.params)
+        except Exception:
+            raise NoSourceFound(message="No download sounce found")
+        self.session.start_dht()
+
+        for count in range(10):
+            if(not handle.has_metadata()):
+                time.sleep(1)
+            else:
+                break
+        else:
+            raise NoMetadataFound(message="Unable to fetch metadata")
+        return handle
+
+    def download_torrent(self, file: bytes) -> lt.torrent_handle | None:
+        try:
+            t_info = lt.torrent_info(file)
+            handle = self.session.add_torrent({
+                **self.params,
+                'ti': t_info
+            })
         except Exception:
             raise NoSourceFound(message="No download sounce found")
         self.session.start_dht()
