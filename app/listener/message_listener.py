@@ -42,13 +42,12 @@ class MessageListener:
             self.telebot_service.edit_message(message=reply,edit_text="Downloading Metadata...")
             try:
                 handle = self.torrent_service.download_magnet(link=link)
+                self._handle_polling(handle=handle,reply=reply)
             except NoSourceFound as e:
                 self.telebot_service.edit_message(message=reply,edit_text="No download source found")
             except NoMetadataFound as e:
                 self.telebot_service.edit_message(message=reply,edit_text="Unable to fetch metadata")
 
-            if(handle):
-                self._handle_polling(handle=handle,reply=reply)
         else:
             self.telebot_service.edit_message(message=reply,edit_text="No download link found")
 
@@ -60,13 +59,12 @@ class MessageListener:
             self.telebot_service.edit_message(message=reply,edit_text="Downloading Metadata...")
             try:
                 handle = self.torrent_service.download_torrent(file=file)
+                self._handle_polling(handle=handle,reply=reply)
             except NoSourceFound as e:
                 self.telebot_service.edit_message(message=reply,edit_text="No download source found")
             except NoMetadataFound as e:
                 self.telebot_service.edit_message(message=reply,edit_text="Unable to fetch metadata")
 
-            if(handle):
-                self._handle_polling(handle=handle,reply=reply)
         else:
             self.telebot_service.edit_message(message=reply,edit_text="No download source found")
 
@@ -75,7 +73,11 @@ class MessageListener:
         self.telebot_service.edit_message(message=reply,edit_text=f"Got Metadata, Starting Torrent Download...\n\nUploading: {name}")
         for status in self.torrent_service.status_handler(handle=handle):
             msg = TelebotUtil.format_torrent_status(status=status,name=name)
-            self.telebot_service.edit_message(message=reply,edit_text=msg)
+            if msg != reply.text:
+                try:
+                    self.telebot_service.edit_message(message=reply,edit_text=msg)
+                except Exception as e:
+                    print("Error in editing message", e)
         else:
             self.telebot_service.delete_message(reply)
             msg = f"✅ Upload COMPLETED\n\n{name}\n{f'{chr(10)}Check Here : {self.path_link}' if(self.path_link) else ''}\n\nReady To Go Again"
