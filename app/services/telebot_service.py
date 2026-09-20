@@ -5,18 +5,31 @@ from telebot.types import Message
 class TelebotService:
     def __init__(self, api_key):
         self.bot = TeleBot(api_key, num_threads=10)
+        self.is_active = False
 
     def register(self, callback, commands):
         self.bot.register_message_handler(callback=callback, commands=commands)
 
     def start(self):
-        self.bot.polling()
+        self.is_active = True
+        while self.is_active:
+            try:
+                self.bot.polling(
+                    interval=1,
+                    timeout=60,
+                    long_polling_timeout=60
+                )
+            except Exception as e:
+                print("Polling error: ", e)
+
 
     def get_file(self, file_id:str) -> bytes:
         file_info = self.bot.get_file(file_id=file_id)
         return self.bot.download_file(file_path=file_info.file_path)
 
     def stop(self):
+        self.is_active = False
+        self.bot.stop_polling()
         self.bot.stop_bot()
 
     def send_message(self, message: Message, text: str):

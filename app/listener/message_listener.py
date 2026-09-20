@@ -77,7 +77,7 @@ class MessageListener:
                 try:
                     self.telebot_service.edit_message(message=reply,edit_text=msg)
                 except Exception as e:
-                    print("Error in editing message", e)
+                    print("Error in editing same message ", reply.text == msg)
         else:
             self.telebot_service.delete_message(reply)
             msg = f"✅ Upload COMPLETED\n\n{name}\n{f'{chr(10)}Check Here : {self.path_link}' if(self.path_link) else ''}\n\nReady To Go Again"
